@@ -68,6 +68,68 @@ class ParquesApi extends CI_Controller {
 		}
 	}
 
+	public function updateUserName(){
+		$method = $_SERVER['REQUEST_METHOD'];
+		if($method != 'POST'){
+			json_output(array('status' => 400,'message' => 'Error de petición.'));
+		} else {
+			$stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+			$body = json_decode($stream_clean,true);
+
+			$user = array(
+				'id_usuario' => $body['id_usuario'],
+				'nombre' => $body['nombre'],
+				'apellido' => $body['apellido']
+			);
+
+			$this->load->model('User_model');
+			$response = $this->User_model->updateUserName($user);
+
+			json_output($response);
+		}
+	}
+
+	public function updateDocument($idUsuario){
+		$method = $_SERVER['REQUEST_METHOD'];
+		if($method != 'POST'){
+			json_output(array('status' => 400,'message' => 'Error de petición.'));
+		} else {
+			$stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+			$body = json_decode($stream_clean,true);
+
+			$documento = array(
+				'id_tipo_documento' => $body['id_tipo_documento'],
+				'numero_documento' => $body['numero_documento']
+			);
+
+			$this->load->model('User_model');
+			$response = $this->User_model->updateDocument($idUsuario, $documento);
+
+			json_output($response);
+		}
+	}
+
+	public function updatePassword(){
+		$method = $_SERVER['REQUEST_METHOD'];
+		if($method != 'POST'){
+			json_output(array('status' => 400,'message' => 'Error de petición.'));
+		} else {
+			$stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+			$body = json_decode($stream_clean,true);
+
+			$user = array(
+				'id_usuario' => $body['id_usuario'],
+				'contrasenia_vieja' => $body['contrasenia_vieja'],
+				'contrasenia' => $body['contrasenia']
+			);
+
+			$this->load->model('User_model');
+			$response = $this->User_model->updatePassword($user);
+
+			json_output($response);
+		}
+	}
+
 	public function getParques(){
 		$method = $_SERVER['REQUEST_METHOD'];
 		if($method != 'GET'){

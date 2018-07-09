@@ -57,6 +57,75 @@ class User_model extends CI_Model {
 		}
 
 	}
+
+	public function updateUserName($user){
+		$validUser = $this->db->get_where('usuarios', array('id_usuario' => $user['id_usuario']))->num_rows();
+		if($validUser <> 1){
+			return array('status' => 409, 'message' => 'Usuario inválido');
+		}else{
+			$this->db->trans_start();
+			$this->db->where('id_usuario', $user['id_usuario']);
+			$data = array(
+				'nombre'=> $user['nombre'],
+				'apellido' => $user['apellido']
+			);
+			$this->db->update('usuarios', $data);
+			if ($this->db->trans_status() === FALSE){
+				$this->db->trans_rollback();
+				return array('status' => 500,'message' => 'No se pudieron actualizar los datos');
+			} else {
+				$this->db->trans_commit();
+				return array('status' => 200,'message' => 'Datos actualizados correctamente');
+			}
+		}
+	}
+
+	public function updateDocument($idUsuario, $user){
+		$validUser = $this->db->get_where('usuarios', array('id_usuario' => $idUsuario))->num_rows();
+		if($validUser <> 1){
+			return array('status' => 409, 'message' => 'Usuario inválido');
+		}else{
+			$this->db->trans_start();
+			$this->db->where('id_usuario', $idUsuario);
+			$data = array(
+				'id_tipo_documento' => $user['id_tipo_documento'],
+				'numero_documento' => $user['numero_documento']
+			);
+			$this->db->update('usuarios', $data);
+			if ($this->db->trans_status() === FALSE){
+				$this->db->trans_rollback();
+				return array('status' => 500,'message' => 'No se pudieron actualizar los datos');
+			} else {
+				$this->db->trans_commit();
+				return array('status' => 200,'message' => 'Datos actualizados correctamente');
+			}
+		}
+	}
+
+	public function updatePassword($user){
+		$dbUser = $this->db->get_where('usuarios', array('id_usuario' => $user['id_usuario']))->row();
+		if($dbUser == null){
+			return array('status' => 409, 'message' => 'Usuario inválido');
+		}else{
+			if ($user['contrasenia_vieja'] === $dbUser['contrasenia']){
+				$this->db->trans_start();
+				$this->db->where('id_usuario', $user['id_usuario']);
+				$data = array(
+					'contrasenia' => $user['contrasenia']
+				);
+				$this->db->update('usuarios', $data);
+				if ($this->db->trans_status() === FALSE){
+					$this->db->trans_rollback();
+					return array('status' => 500,'message' => 'No se pudo actualizar la contraseña');
+				} else {
+					$this->db->trans_commit();
+					return array('status' => 200,'message' => 'Contraseña actualizada correctamente');
+				}
+			} else {
+				return array('status' => 409,'message' => 'Contraseña antigua incorrecta');
+			}
+		}
+	}
 }
 //return array('status' => $q);
 
