@@ -12,7 +12,7 @@ class User_model extends CI_Model {
 		//$q  = $this->db->get_where(User_model::USERS_TABLE, array('email' => $email))->row();
 		$q = $this->db->query("SELECT u.*, d.descripcion as tipo_doc FROM usuarios u inner join tipos_documento d on u.id_tipo_documento = d.id_tipo_documento WHERE u.email = '" . $email . "'")->result_array();
 
-		if(is_null($q) || empty($q)){
+		if(is_null($q) || empty($q) || $q[0]['activo'] == 0){
 			return array('status' => 204,'message' => 'Usuario no encontrado');
 		} else {
 			$q = $q[0];	//como me va a devolver 1 solo usuario, obtengo el primero.
@@ -129,6 +129,28 @@ class User_model extends CI_Model {
 			}
 		}
 	}
+
+	public function deleteCuenta($idUsuario){
+		$validUser = $this->db->get_where('usuarios', array('id_usuario' => $idUsuario))->num_rows();
+		if($validUser <> 1){
+			return array('status' => 409, 'message' => 'Usuario inválido');
+		}else{
+			$this->db->trans_start();
+			$this->db->where('id_usuario', $idUsuario);
+			$data = array(
+				'activo' => 0
+			);
+			$this->db->update('usuarios', $data);
+			if ($this->db->trans_status() === FALSE){
+				$this->db->trans_rollback();
+				return array('status' => 500,'message' => 'No se pudieron actualizar los datos');
+			} else {
+				$this->db->trans_commit();
+				return array('status' => 200,'message' => 'Cuenta borrada correctamente', 'response' => 'Su cuenta ha sido borrada correctamente');
+			}
+		}
+	}
+
 }
 //return array('status' => $q);
 
