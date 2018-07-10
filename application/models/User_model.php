@@ -103,11 +103,14 @@ class User_model extends CI_Model {
 	}
 
 	public function updatePassword($user){
-		$dbUser = $this->db->get_where('usuarios', array('id_usuario' => $user['id_usuario']))->row();
+		$idUsuario = $user['id_usuario'];
+		$dbUser = $this->db->query("SELECT contrasenia from usuarios u where $idUsuario = u.id_usuario")->row();
+		$contraseniaDB = $dbUser->contrasenia;
+
 		if($dbUser == null){
 			return array('status' => 409, 'message' => 'Usuario inválido');
 		}else{
-			if ($user['contrasenia_vieja'] === $dbUser['contrasenia']){
+			if ($user['contrasenia_vieja'] === $contraseniaDB){
 				$this->db->trans_start();
 				$this->db->where('id_usuario', $user['id_usuario']);
 				$data = array(
