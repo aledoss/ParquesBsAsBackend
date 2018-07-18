@@ -151,6 +151,10 @@ class User_model extends CI_Model {
 		}
 	}
 
+	public function recoverPassword($email){
+		return array('status' => 200,'message' => 'Contraseña recuperada', 'response' => 'Se ha enviado un mail a tu correo para restablecer tu contraseña.');
+	}
+
 }
 //return array('status' => $q);
 
