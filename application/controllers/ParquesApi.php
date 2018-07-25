@@ -408,6 +408,28 @@ class ParquesApi extends CI_Controller {
 		}
 	}
 
+	public function getActividadesToFilter(){
+		$method = $_SERVER['REQUEST_METHOD'];
+		if($method != 'GET'){
+			json_output(array('status' => 400,'message' => 'Error de petición.'));
+		}else{
+			$this->load->model('Parques_model');
+
+			json_output($this->Parques_model->getActividadesToFilter());
+		}
+	}
+
+	public function getFeriasToFilter(){
+		$method = $_SERVER['REQUEST_METHOD'];
+		if($method != 'GET'){
+			json_output(array('status' => 400,'message' => 'Error de petición.'));
+		}else{
+			$this->load->model('Parques_model');
+
+			json_output($this->Parques_model->getFeriasToFilter());
+		}
+	}
+
 }
 
 ?>

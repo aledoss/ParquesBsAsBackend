@@ -306,7 +306,27 @@ class Parques_model extends CI_Model {
 			return array('status' => 200,'message' => 'Calificación registrada');
 		}
 
-	}	
+	}
+
+	public function getActividadesToFilter(){
+		$result = $this->db->query("SELECT id_actividad, nombre FROM actividades")->result_array();
+		
+		if(is_null($result) || empty($result)){
+			return array('status' => 204, 'message' => 'No se pudieron obtener las actividades');
+		}else{
+			return array('status' => 200, 'message' => 'Actividades obtenidas correctamente', 'response' => $result);
+		}
+	}
+
+	public function getFeriasToFilter(){
+		$result = $this->db->query("SELECT id_feria_comun, tipo FROM ferias_comunes group by tipo")->result_array();
+		
+		if(is_null($result) || empty($result)){
+			return array('status' => 204, 'message' => 'No se pudieron obtener las ferias');
+		}else{
+			return array('status' => 200, 'message' => 'Ferias obtenidas correctamente', 'response' => $result);
+		}
+	}
 
 }
 ?>
