@@ -328,5 +328,78 @@ class Parques_model extends CI_Model {
 		}
 	}
 
+	public function filterParques($actividades, $ferias, $feriaItineranteSelected, $centroSaludSelected, $patioJuegosSelected){
+		$joinActividades = "";
+		$joinFerias = "";
+		$joinFeriaItinerante = "";
+		$joinEstacionSaludable = "";
+		$whereIdActividades = "";
+		$whereFeriasComunes = "";
+		$whereFeriaItinerante = "";
+		$whereEstacionSaludable = "";
+		$wherePatioJuegos = "";
+		$whereParqueDefault = " p.activo = 1 group by p.nombre ";
+		if (count($actividades) > 0){
+			foreach ($actividades as $row) {
+				$joinActividades = " LEFT JOIN parques_actividades pa ON p.id_parque = pa.id_parque ";
+				$whereIdActividades = " id_actividad = " . $row['id_actividad'] . " AND " . $whereIdActividades ;
+			}
+			$whereIdActividades = $whereIdActividades . ' pa.activo = 1 ' ;
+		}
+		if (count($ferias) > 0){
+			foreach ($ferias as $row) {
+				$joinFerias = " LEFT JOIN ferias_comunes fc ON p.id_parque = fc.id_parque ";
+				$whereFeriasComunes = " tipo = '" . $row['tipo'] . "' AND " . $whereFeriasComunes ;
+			}
+			$whereFeriasComunes = $whereFeriasComunes . ' fc.activo = 1 ';
+		}
+		if ($feriaItineranteSelected){
+			$joinFeriaItinerante = " LEFT JOIN ferias_itinerantes fi ON fi.id_parque = p.id_parque ";
+			$whereFeriaItinerante = " fi.activo = 1 ";
+		}
+		if ($centroSaludSelected){
+			$joinEstacionSaludable = " LEFT JOIN estaciones_salud es ON es.id_parque = p.id_parque ";
+			$whereEstacionSaludable = " es.activo = 1 ";
+		}
+		if ($patioJuegosSelected){
+			$wherePatioJuegos = " p.patio_juegos = 1 ";
+		}
+
+		$where = $whereIdActividades;
+		if ($where == ""){
+			$where = $whereFeriasComunes;
+		} else if ($whereFeriasComunes != "") {
+			$where = $where . " AND " . $whereFeriasComunes;
+		}
+		if ($where == ""){
+			$where = $whereFeriaItinerante;
+		} else if ($whereFeriaItinerante != "") {
+			$where = $where . " AND " . $whereFeriaItinerante;
+		}
+		if ($where == ""){
+			$where = $whereEstacionSaludable;
+		} else if ($whereEstacionSaludable != ""){
+			$where = $where . " AND " . $whereEstacionSaludable;
+		}
+		if ($where == ""){
+			$where = $wherePatioJuegos;
+		} else if ($wherePatioJuegos != ""){
+			$where = $where . " AND " . $wherePatioJuegos;
+		}
+		if ($where == ""){
+			$where = $whereParqueDefault;
+		} else {
+			$where = $where . " AND " . $whereParqueDefault;
+		}
+
+		$result = $this->db->query("SELECT p.id_parque, c.comuna, b.descripcion barrio, p.id_wifi wifi, p.nombre, p.descripcion, p.direccion, p.imagen, p.patio_juegos, p.latitud, p.longitud, p.latitud, p.imagen_android FROM parques p LEFT JOIN comunas c on p.id_comuna = c.id_comuna LEFT JOIN barrios b on p.id_barrio = b.id_barrio $joinActividades $joinFerias $joinEstacionSaludable $joinFeriaItinerante where $where")->result_array();
+
+		if(is_null($result)){
+			return array('status' => 204, 'message' => 'No se pudieron obtener los parques a partir de filtros');
+		}else{
+			return array('status' => 200, 'message' => 'Parques a partir de filtros obtenidos correctamente', 'response' => $result);
+		}
+	}
+
 }
 ?>
