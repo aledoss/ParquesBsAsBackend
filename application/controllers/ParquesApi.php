@@ -164,6 +164,28 @@ class ParquesApi extends CI_Controller {
 		}
 	}
 
+	public function loginWithGoogle(){
+		$method = $_SERVER['REQUEST_METHOD'];
+		if($method != 'POST'){
+			json_output(array('status' => 400,'message' => 'Error de petición.'));
+		} else {
+			$stream_clean = $this->security->xss_clean($this->input->raw_input_stream);
+			$body = json_decode($stream_clean,true);
+
+			$user = array(
+				'nombre' => $body['nombre']
+				'apellido' => $body['apellido'],
+				'email' => $body['email'],
+				'id_google' => $body['id_google']
+			);
+
+			$this->load->model('User_model');
+			$response = $this->User_model->loginWithGoogle($user);
+
+			json_output($response);
+		}
+	}
+
 	public function getParques(){
 		$method = $_SERVER['REQUEST_METHOD'];
 		if($method != 'GET'){

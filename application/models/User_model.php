@@ -155,6 +155,45 @@ class User_model extends CI_Model {
 		return array('status' => 200,'message' => 'Contraseña recuperada', 'response' => 'Se ha enviado un mail a tu correo para restablecer tu contraseña.');
 	}
 
+	public function loginWithGoogle($user) {
+		$q = $this->db->query("SELECT u.id_usuario, u.activo FROM usuarios u WHERE u.email = '" . $user['email'] . "'")->result_array();
+
+		if(is_null($q) || empty($q) || $q[0]['activo'] == 0){
+			date_default_timezone_set('America/Argentina/Buenos_Aires');
+			$fechaCreacion = date('Y-m-d H:i:s');
+			$user['id_tipo_usuario'] = 2;
+			$user['id_tipo_documento'] => 1;
+			$user['fecha_creacion'] = $fechaCreacion;
+			$user['activo'] = 1;
+
+			$this->db->trans_start();
+			$this->db->insert('usuarios', $user);
+			if ($this->db->trans_status() === FALSE){
+				$this->db->trans_rollback();
+				return array('status' => 500,'message' => 'No se pudo crear la cuenta');
+			} else {
+				$this->db->trans_commit();
+				$userDB = $this->db->query("SELECT u.*, d.descripcion as tipo_doc FROM usuarios u inner join tipos_documento d on u.id_tipo_documento = d.id_tipo_documento WHERE u.email = '" . $user['email'] . "'")->row();
+				return array('status' => 200,'message' => 'Cuenta creada correctamente', 'response' => $userDB);
+			}
+		} else {
+			$this->db->trans_start();
+			$this->db->where('id_usuario', $q[0]['id_usuario']);
+			$data = array(
+				'id_google' => $user['id_google']
+			);
+			$this->db->update('usuarios', $data);
+			if ($this->db->trans_status() === FALSE){
+				$this->db->trans_rollback();
+				return array('status' => 500,'message' => 'No se pudo vincular la cuenta con Google +');
+			} else {
+				$this->db->trans_commit();
+				$userDB = $this->db->query("SELECT u.*, d.descripcion as tipo_doc FROM usuarios u inner join tipos_documento d on u.id_tipo_documento = d.id_tipo_documento WHERE u.email = '" . $user['email'] . "'")->row();
+				return array('status' => 200,'message' => 'Se actualizo el google id para el usuario ' . $q[0]['id_usuario'], 'response' => $userDB);
+			}
+		}
+	}
+
 }
 //return array('status' => $q);
 

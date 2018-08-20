@@ -7,7 +7,7 @@ class Parques_model extends CI_Model {
 	}
 
 	public function getParques(){
-		$parques = $this->db->query("SELECT p.id_parque, c.comuna, b.descripcion barrio, p.id_wifi wifi, p.nombre, p.descripcion, p.direccion, p.imagen, p.patio_juegos, p.latitud, p.longitud, p.latitud, p.imagen_android FROM parques p LEFT JOIN comunas c on p.id_comuna = c.id_comuna LEFT JOIN barrios b on p.id_barrio = b.id_barrio WHERE p.activo = '1'")->result_array();
+		$parques = $this->db->query("SELECT p.id_parque, c.comuna, b.descripcion barrio, p.id_wifi wifi, p.nombre, p.descripcion, p.direccion, p.imagen, p.patio_juegos, p.latitud, p.longitud, p.latitud, p.imagen_android, p.likes, p.hates FROM parques p LEFT JOIN comunas c on p.id_comuna = c.id_comuna LEFT JOIN barrios b on p.id_barrio = b.id_barrio WHERE p.activo = '1'")->result_array();
 
 		if(is_null($parques) || empty($parques)){
 			return array('status' => 404, 'message' => 'No se pudieron obtener los parques');
