@@ -35,25 +35,30 @@ class User_model extends CI_Model {
 	}
 
 	public function createUser($user){
-		date_default_timezone_set('America/Argentina/Buenos_Aires');
-		$fechaCreacion = date('Y-m-d H:i:s');
-		$user['id_tipo_usuario'] = 2;
-		$user['fecha_creacion'] = $fechaCreacion;
-		$user['activo'] = 1;
+		$q = $this->db->query("SELECT u.id_usuario FROM usuarios u WHERE u.email = '" . $user['email'] . "'")->result_array();
+		if (is_null($q) || empty($q)){
+				date_default_timezone_set('America/Argentina/Buenos_Aires');
+			$fechaCreacion = date('Y-m-d H:i:s');
+			$user['id_tipo_usuario'] = 2;
+			$user['fecha_creacion'] = $fechaCreacion;
+			$user['activo'] = 1;
 
-		$cantUser = $this->db->get_where('usuarios', array('email' => $user['email']))->num_rows();
-		if($cantUser){
-			return array('status' => 409, 'message' => 'Email existente');
-		}else{
-			$this->db->trans_start();
-			$this->db->insert('usuarios', $user);
-			if ($this->db->trans_status() === FALSE){
-				$this->db->trans_rollback();
-				return array('status' => 500,'message' => 'No se pudo crear la cuenta');
-			} else {
-				$this->db->trans_commit();
-				return array('status' => 200,'message' => 'Cuenta creada correctamente');
+			$cantUser = $this->db->get_where('usuarios', array('email' => $user['email']))->num_rows();
+			if($cantUser){
+				return array('status' => 409, 'message' => 'Email existente');
+			}else{
+				$this->db->trans_start();
+				$this->db->insert('usuarios', $user);
+				if ($this->db->trans_status() === FALSE){
+					$this->db->trans_rollback();
+					return array('status' => 500,'message' => 'No se pudo crear la cuenta');
+				} else {
+					$this->db->trans_commit();
+					return array('status' => 200,'message' => 'Cuenta creada correctamente');
+				}
 			}
+		} else {
+			return array('status' => 500,'message' => 'Ya existe una cuenta creada con este mail');
 		}
 
 	}
