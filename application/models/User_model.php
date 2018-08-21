@@ -39,7 +39,7 @@ class User_model extends CI_Model {
 		if (is_null($q) || empty($q)){
 				date_default_timezone_set('America/Argentina/Buenos_Aires');
 			$fechaCreacion = date('Y-m-d H:i:s');
-			$user['id_tipo_usuario'] = 2;
+			$user['id_tipo_usuario'] = 1;
 			$user['fecha_creacion'] = $fechaCreacion;
 			$user['activo'] = 1;
 
@@ -166,8 +166,8 @@ class User_model extends CI_Model {
 		if(is_null($q) || empty($q) || $q[0]['activo'] == 0){
 			date_default_timezone_set('America/Argentina/Buenos_Aires');
 			$fechaCreacion = date('Y-m-d H:i:s');
-			$user['id_tipo_usuario'] = 2;
-			$user['id_tipo_documento'] => 1;
+			$user['id_tipo_usuario'] = 1;
+			$user['id_tipo_documento'] = 1;
 			$user['fecha_creacion'] = $fechaCreacion;
 			$user['activo'] = 1;
 

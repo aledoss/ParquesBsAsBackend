@@ -173,7 +173,7 @@ class ParquesApi extends CI_Controller {
 			$body = json_decode($stream_clean,true);
 
 			$user = array(
-				'nombre' => $body['nombre']
+				'nombre' => $body['nombre'],
 				'apellido' => $body['apellido'],
 				'email' => $body['email'],
 				'id_google' => $body['id_google']
