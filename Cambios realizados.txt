@@ -1,0 +1,14 @@
+Cambios realizados
+-En el DB_drive.php, linea 691, comenté el return, ya que lo quiero manejar yo.
+-El campo Email, en "Usuarios", es Unique
+
+
+
+
+
+
+
+Reunión:
+-Web: Muestra de modulo de parques.
+-Android: muestra mapa de parques, componentes de parque, reclamos del parque
+-Tabla Wifi eliminar
